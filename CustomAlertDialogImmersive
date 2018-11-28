@@ -1,0 +1,69 @@
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.view.WindowManager;
+
+/**
+ * Created by Satpal.Yadav on 23-11-2018.
+ */
+
+public class CustomAlertDialog extends AlertDialog {
+
+    Activity mActivity;
+    protected CustomAlertDialog(Context context) {
+        super(context);
+        try {
+            mActivity = (Activity) context;
+        } catch (Exception e) {
+
+        }
+    }
+
+    protected CustomAlertDialog(Context context, boolean cancelable, OnCancelListener cancelListener) {
+        super(context, cancelable, cancelListener);
+        try {
+            mActivity = (Activity) context;
+        } catch (Exception e) {
+
+        }
+    }
+
+    protected CustomAlertDialog(Context context, int themeResId) {
+        super(context, themeResId);
+        try {
+            mActivity = (Activity) context;
+        } catch (Exception e) {
+
+        }
+    }
+
+
+    @Override
+    public void show() {
+        try {
+            // Set the dialog to not focusable.
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
+
+            setImmersive();
+
+            // Show the dialog with NavBar hidden.
+            super.show();
+
+            // Set the dialog to focusable again.
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
+        } catch (Exception e) {
+        }
+    }
+
+    private void setImmersive() {
+        try {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+                getWindow().getDecorView().setSystemUiVisibility(
+                        mActivity.getWindow().getDecorView().getSystemUiVisibility());
+            }
+        } catch (Exception e) {
+
+        }
+    }
+}
