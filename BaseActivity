@@ -1,0 +1,117 @@
+
+import android.app.Activity;
+import android.content.Context;
+import android.os.Bundle;
+import android.os.PowerManager;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+
+import com.mtlauncher.skintormintui.Common.Common;
+
+import org.jetbrains.annotations.Nullable;
+
+/**
+ * Created by Satpal.Yadav on 17-09-2018.
+ */
+
+public class BaseActivity extends Activity {
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Common.currentContext = this;
+        PowerManager pmanager;
+        PowerManager.WakeLock wakeLock;
+        pmanager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        wakeLock = pmanager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
+                "SkintOrMintUI");
+  
+        wakeLock.acquire();
+
+
+
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+        getWindow().setFlags(
+                WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        goFullScreen();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Common.currentContext = this;
+        goFullScreen();
+    }
+
+    public void goFullScreen() {
+        final View decorView = getWindow().getDecorView();
+        decorView.setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
+            @Override
+            public void onSystemUiVisibilityChange(int visibility) {
+                try {
+                    if ((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
+                        decorView.setSystemUiVisibility(
+                                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                                        | View.SYSTEM_UI_FLAG_FULLSCREEN
+                                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+                    }
+                } catch (Exception e) {
+                }
+            }
+        });
+    }
+
+
+    @Override
+    public void onBackPressed() {
+
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) {
+            hideSystemUI();
+        }
+    }
+
+    private void hideSystemUI() {
+        // Enables regular immersive mode.
+        // For "lean back" mode, remove SYSTEM_UI_FLAG_IMMERSIVE.
+        // Or for "sticky immersive," replace it with SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+        View decorView = getWindow().getDecorView();
+        decorView.setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                        // Set the content to appear under the system bars so that the
+                        // content doesn't resize when the system bars hide and show.
+                        | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        // Hide the nav bar and status bar
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN);
+    }
+
+    // Shows the system bars by removing all the flags
+// except for the ones that make the content appear under the system bars.
+    private void showSystemUI() {
+        View decorView = getWindow().getDecorView();
+        decorView.setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+    }
+
+
+}
